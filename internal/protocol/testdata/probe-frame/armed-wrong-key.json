@@ -1,0 +1,9 @@
+{
+  "schema": "antinat.contracts/probe-frame/v1",
+  "vector_id": "armed-wrong-key",
+  "kind": "armed",
+  "expect": "invalid",
+  "frame_hex": "5244593147aecfbf889c38020498cde9a26fdbff2ecc69edf4ea4a75ca0487aad88aaea69209c50e3c32386fc81e5202003a9913a5eb16da807301fc54df524a814e071c57aa985c29ff07416d39abb922caae34caac29fe9acf1818a3eb3fde020f740e",
+  "arm_digest_hex": "47aecfbf889c38020498cde9a26fdbff2ecc69edf4ea4a75ca0487aad88aaea6",
+  "node_public_key_hex": "a09aa5f47a6759802ff955f8dc2d2a14a5c99d23be97f864127ff9383455a4f0"
+}

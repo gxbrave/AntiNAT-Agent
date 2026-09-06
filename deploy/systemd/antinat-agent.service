@@ -1,0 +1,38 @@
+[Unit]
+Description=AntiNAT Agent
+Documentation=https://github.com/gxbrave/AntiNAT-Agent
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=antinat
+Group=antinat
+EnvironmentFile=-/etc/antinat/agent.conf
+ExecStart=/opt/antinat/bin/antinat-agent
+WorkingDirectory=/var/lib/antinat
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=15s
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+LockPersonality=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+ReadWritePaths=/var/lib/antinat /var/log/antinat
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

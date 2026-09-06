@@ -1,0 +1,29 @@
+#!/sbin/openrc-run
+
+name="antinat-agent"
+description="AntiNAT Agent"
+command="/opt/antinat/bin/antinat-agent"
+command_user="antinat:antinat"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/antinat/agent.log"
+error_log="/var/log/antinat/agent.err"
+retry="TERM/15/KILL/5"
+
+depend() {
+	need net
+	after firewall
+}
+
+start_pre() {
+	checkpath --directory --mode 0700 --owner antinat:antinat /var/lib/antinat
+	checkpath --directory --mode 0750 --owner antinat:antinat /var/log/antinat
+	checkpath --file --mode 0600 --owner root:root /etc/antinat/agent.conf
+	# openrc-run does not parse systemd EnvironmentFile syntax itself. The
+	# Agent receives the same values through the service manager environment.
+	if [ -r /etc/antinat/agent.conf ]; then
+		set -a
+		. /etc/antinat/agent.conf
+		set +a
+	fi
+}

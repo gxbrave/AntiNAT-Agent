@@ -1,0 +1,10 @@
+{
+  "schema": "antinat.contracts/probe-frame/v1",
+  "vector_id": "receipt-wrong-provider",
+  "kind": "receipt",
+  "expect": "valid",
+  "frame_hex": "5243543147aecfbf889c38020498cde9a26fdbff2ecc69edf4ea4a75ca0487aad88aaea68b58f6a8e966a525ca6f8311c6bf2fcb604afe9ffdfa57740d07d95bdcbfdbfa0909090909090909090909090909090984c6ce6667dc5f5ce0e19a23106667c7150dd48e1815453726d3cf851953132d8285dea52bcf13c6b4e39c349ba6594a96d66ba8e3fd09094d2317284f16f906",
+  "provider_id_hex": "09090909090909090909090909090909",
+  "challenge_hash_hex": "8b58f6a8e966a525ca6f8311c6bf2fcb604afe9ffdfa57740d07d95bdcbfdbfa",
+  "node_public_key_hex": "a09aa5f47a6759802ff955f8dc2d2a14a5c99d23be97f864127ff9383455a4f0"
+}

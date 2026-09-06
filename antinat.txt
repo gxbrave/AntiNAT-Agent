@@ -1,0 +1,328 @@
+【AntiNAT】大东一个基于go的打洞项目，我准备从0开发它。
+打洞原理可参考https://github.com/MikeWang000000/Natter/  并结合你自己对网络的理解，强化/修改/升级打洞技能  本程序的打洞原理参考这个项目原理  重新根据网络原理开发  核心功能需要实现打洞并转发,中间尽可能实现零拷贝，性能开销需要尽可能地小，且不得有较大延迟抖动。
+
+使用go语言编写，要求整个系统轻量、且支持高并发。
+
+系统组成为：面板（主控）、Agent（子终端）
+
+主控仅承担导航跳转、对Agent进行管理等功能，实际转发和打洞业务是由Agent承担。
+支持转发、限速、流量统计、自定义解析脚本、自定义跳转地址（IP或域名），添加修改或删除转发时不可影响已有转发及连接，避免热维护时客户断连。
+
+整个项目完全支持V4V6双栈，。
+
+安装脚本：
+可选
+1.仅安装主控
+2.安装主控+Agent（本机模式）：该模式下会自动安装一个主控并自动安装Agent添加到主控面板
+3.卸载所有
+
+安装时，先提示用户是否修改监听端口：（默认3111）
+提示用户设置管理账号及密码，留空自动生成随机密码。
+安装完成后输出简要信息（设置的监听端口、账号密码）及跳转地址（通过ip.sb读取公网ip与用户设置的监听端口组合）
+
+核心逻辑：
+程序全栈使用go编写，初版至少需要支持x64和arm架构的支持，可支持alpine/Debian/Ubuntu多种Linux系统。
+
+前端设计参考:
+【强制前端设计技能约束】
+
+凡任务涉及前端设计、UI/UX、视觉审美、界面重构、交互流程、组件样式、动效、微交互、设计评审、可用性审计或界面优化，必须在开始分析、设计或编码前，完整读取并优先使用以下四个技能：
+
+1. design-critique
+2. frontend-design
+3. impeccable
+4. make-interfaces-feel-better
+
+除非用户明确要求跳过，否则不得省略、替代或只使用其中部分技能。
+
+执行原则：
+- design-critique：先评估问题、用户目标、可用性与设计缺陷。
+- frontend-design：确定视觉方向、布局、字体、色彩与整体审美。
+- impeccable：处理整体界面架构、交互质量、信息层级与体验一致性。
+- make-interfaces-feel-better：处理视觉细节、动效、状态、边框、阴影、图标与微交互。
+
+完成任务时，必须基于这四个技能进行自我审查，并在最终说明中简要列出实际使用的技能。
+
+
+本项目主控仅需监听
+本项目前端设计需要主要为白色底，较为简约的管理面板风格。
+面板端直接访问根页面为首页，为类似网址导航的风格，显示的每个导航目的地网站名和网站网址，右上角有设置按钮可进入管理界面
+管理页包含“首页设置”、“转发设置”、“节点”、“全局设置”
+
+首页：标准扁平化卡片布局的网址导航，左侧支持分类选择，每个卡片显示网站名称和介绍以及跳转按钮。
+
+管理页：
+首页设置：可以和正常网址导航后台一样编辑，卡片式、可拖拽，跳转链接可以自定义也可以选择转发设置中已设置的转发进行关联 实时更新。
+转发设置：同样是扁平卡片化的设计,可选按节点分组或全部显示，卡片显示转发名称、打洞成功的IP：端口、转发的目标地址：端口、设置的跳转地址、右上角有编辑按钮。
+添加/修改转发时，可以选择指定节点，选择tcp或udp，输入转发目标地址（可以是域名:端口也可以是IP：端口），（可选）转发完成后执行的脚本（或JavaScript 代码，该模块的作用主要是可以让用户自己编写DDNS更新脚本，模块上方需要告知用户可以使用的传入参数名（IP及端口）以供DDNS使用，仅当IP或端口发生改变时触发），HTTPS跳转开关（如打洞成功的结果为123.0.0.1:3333，那么开启时跳转链接为https://123.0.0.1:3333/ ，否则为http），自定义域名（主要是修改IP为域名的设置，若设置为www.a.com,则跳转链接为https://www.a.com:3333 ，端口根据打洞结果更新，是否HTTPS由上一个设置决定）
+节点：横向长格显示节点，显示列为节点名称、节点IP、打洞模式、在线状态：绿红状态指示灯+在线/离线、测试打洞状态：绿红状态指示灯+成功/失败、操作列：部署按钮、重试打洞按钮、编辑按钮、删除按钮
+可以管理Agent节点，显示打洞监测状态、IP等基本信息。
+添加完成节点后可以点击部署按钮，生成专属一键部署链接，具体为：点击时弹出仅可通过关闭按钮关闭的浮窗，可以设置主控地址、是否使用github代理、指定打洞模式（可选部分根据你实际理解原理后生成，若不选则交给Agent自动检测）、指定打洞网卡，通过传入参数把上述选项交给Agent
+（该模块具体可参考提示词：
+请先完整分析我的项目结构、前端技术栈、后端接口、节点数据类型和现有 UI 组件，然后实现一个“添加节点 + 生成一键部署命令”的完整功能。
+
+参考项目：
+https://github.com/nuomiiiii/komari-web/
+
+重点参考文件：
+src/pages/admin/index.tsx
+
+重点参考的功能：
+1. Header 中的 handleAddNode 和“添加节点”弹窗
+2. GenerateCommandButton 组件
+3. “GitHub 代理”附近的安装配置表单
+4. quoteShellArg、quoteShellArgs、quotePowerShellArg
+5. normalizeOptionalServiceUrl
+6. deployment-profile 的读取、保存和下发逻辑
+
+不要机械复制原项目代码。请根据我当前项目使用的框架、组件库、请求封装、状态管理和后端规范进行适配，并尽量拆分成独立、可维护的组件和工具函数。
+
+目标交互流程：
+
+一、创建节点
+
+- 在节点列表页面增加“添加节点”按钮。
+- 点击按钮打开弹窗。
+- 表单至少包含节点名称，名称允许为空时由后端生成默认名称。
+- 提交时调用我项目实际的创建节点接口。
+- 请求期间防止重复提交，并保持按钮内容和宽度稳定。
+- 必须检查 HTTP 状态码和业务状态。
+- 创建成功后获取新节点的 id/uuid、token 等部署所需信息。
+- 刷新节点列表。
+- 创建成功后直接进入该节点的“一键部署”步骤。
+- 失败时显示后端返回的具体错误信息。
+
+不要未经确认直接沿用参考项目的接口。先检查我的后端；如果缺少对应接口，请补充接口设计和实现。
+
+建议接口契约可以是：
+
+POST /api/admin/nodes
+
+请求：
+{
+  "name": "节点名称"
+}
+
+响应：
+{
+  "success": true,
+  "data": {
+    "id": "节点 ID",
+    "uuid": "节点 UUID",
+    "token": "Agent 注册 Token",
+    "name": "节点名称"
+  }
+}
+
+二、一键部署弹窗
+
+创建成功后显示部署配置弹窗，支持以下平台：
+
+- Linux
+- Windows
+- macOS
+- Docker
+
+弹窗包含安装配置和动态生成的命令。
+
+基础参数：
+
+- 服务端地址 endpoint
+- 节点 token
+- 平台 platform
+
+可选参数：
+
+- 禁用 Web SSH
+- 禁用自动更新
+- 忽略不安全证书
+- 从网卡获取 IP
+- 监测可用内存
+- 启用 GPU 监控
+- GitHub 代理
+- 自定义安装目录
+- 自定义服务名称
+- 只监测指定网卡
+- 排除指定网卡
+- 只监测指定挂载点
+- 采集间隔
+- 每月流量重置日
+
+三、条件配置项
+
+“GitHub 代理”等可选配置采用：
+
+- 一个启用复选框
+- 启用后才显示输入框
+- 关闭时清空对应输入值
+- 生成命令时，只有开关已启用且输入有效，才追加对应参数
+
+GitHub 代理示例：
+
+- 开关：enableGhproxy
+- 值：ghproxy
+- 占位值：https://ghfast.top/
+- 对输入值执行 trim
+- 使用统一 URL 规范化函数处理协议和结尾斜杠
+- 代理地址用于下载 Agent 安装脚本
+- 如果 Agent 安装脚本也需要知道代理，则生成对应命令行参数
+- 不要通过简单字符串拼接产生双斜杠、错误协议或畸形 URL
+
+四、命令参数映射
+
+请建立一个明确的表单状态类型，并把表单字段转换为命令行参数，例如：
+
+disableWebSsh       -> --disable-web-ssh
+disableAutoUpdate   -> --disable-auto-update
+ignoreUnsafeCert    -> --ignore-unsafe-cert
+getIpAddrFromNic    -> --get-ip-addr-from-nic
+memoryIncludeCache  -> --memory-include-cache
+enableGpu           -> --gpu
+ghproxy             -> --install-ghproxy <url>
+dir                 -> --install-dir <path>
+serviceName         -> --install-service-name <name>
+includeNics         -> --include-nics <value>
+excludeNics         -> --exclude-nics <value>
+includeMountpoints  -> --include-mountpoint <value>
+interval            -> -i <seconds>
+monthRotate         -> --month-rotate <day>
+
+采集间隔必须验证为 1～3600 秒。
+流量重置日必须验证为 1～31 的整数。
+无效输入不能生成或保存部署配置，并展示明确错误。
+
+五、不同平台命令
+
+根据平台生成对应命令：
+
+Linux：
+- 下载 install.sh
+- 通过 sudo bash 执行
+- 参数使用安全的 POSIX Shell 转义
+
+Windows：
+- 使用 PowerShell 下载 install.ps1
+- 使用 ExecutionPolicy Bypass 执行
+- 每个参数使用 PowerShell 专用转义
+
+macOS：
+- 使用 curl 下载脚本
+- 使用 zsh 执行
+- 使用 POSIX Shell 转义
+
+Docker：
+- 生成 docker run 命令
+- 添加 --restart=always
+- 根据实际需要配置持久化卷
+- 不要传递只对安装脚本有效的参数，例如：
+  --install-ghproxy
+  --install-dir
+  --install-service-name
+
+不要把不同 Shell 的转义逻辑混用。创建独立工具函数并编写测试：
+
+- quoteShellArg
+- quoteShellArgs
+- quotePowerShellArg
+- normalizeOptionalServiceUrl
+- buildAgentArguments
+- buildInstallCommand
+
+六、部署配置保存
+
+如果我的系统支持保存节点部署配置，请实现：
+
+GET /api/admin/nodes/:id/deployment-profile
+POST /api/admin/nodes/:id/deployment-profile
+
+打开弹窗时读取已保存配置，使用 no-store 或项目现有的禁用缓存机制。
+
+保存内容采用结构化 JSON，不要保存最终拼接出来的命令字符串，例如：
+
+{
+  "profile": {
+    "platform": "linux",
+    "disable_web_ssh": false,
+    "disable_auto_update": false,
+    "ignore_unsafe_cert": false,
+    "enable_ghproxy": true,
+    "ghproxy": "https://ghfast.top/",
+    "enable_custom_dir": false,
+    "dir": "",
+    "enable_custom_service_name": false,
+    "service_name": "",
+    "enable_interval": true,
+    "interval": 1,
+    "enable_month_rotate": true,
+    "month_rotate": 1
+  }
+}
+
+如果 Agent 在线并且系统支持在线配置下发，显示：
+
+- 尚未下发
+- 已保存
+- 已发送
+- 已生效
+- 应用失败
+
+只有采集类运行时参数允许在线下发；安装目录、服务名、安装代理等参数标记为“重新安装后生效”。
+
+七、安全要求
+
+- 节点 token 是敏感信息，只有管理员可以获取。
+- 不要把 token 输出到日志、错误监控或普通用户界面。
+- 不要使用未经转义的模板字符串直接拼接用户输入。
+- 防止节点名称、代理 URL、安装路径、服务名等造成 Shell 注入。
+- 复制命令必须由明确的用户操作触发。
+- Clipboard API 失败时提供降级提示。
+- 请求取消或组件卸载后不要更新状态。
+- 禁止在前端自行生成可伪造的节点 token，token 应由后端安全生成。
+
+八、代码结构
+
+不要继续把所有代码堆在一个页面中。建议拆分为：
+
+components/nodes/AddNodeDialog
+components/nodes/NodeDeploymentDialog
+components/nodes/InstallOptionsForm
+components/nodes/GeneratedCommand
+hooks/useCreateNode
+hooks/useDeploymentProfile
+utils/installCommand
+types/deployment
+
+如果我项目已有对应目录规范，则遵循现有规范。
+
+九、测试
+
+至少补充：
+
+1. 创建节点成功、失败和重复提交测试
+2. 创建成功后进入部署步骤的测试
+3. 各平台命令生成测试
+4. Shell 和 PowerShell 参数转义测试
+5. GitHub 代理 URL 规范化测试
+6. 可选项关闭后不应出现在命令中的测试
+7. Docker 自动剔除安装脚本专用参数的测试
+8. 采集间隔和流量重置日边界测试
+9. deployment-profile 加载和保存测试
+10. token 不会出现在日志中的测试
+
+执行顺序：
+
+1. 先分析我的项目并列出需要修改的文件
+2. 明确现有后端接口和数据类型
+3. 简要说明实施方案
+4. 直接完成代码修改
+5. 运行类型检查、测试和构建
+6. 汇报修改文件、接口契约、验证结果和仍需后端配合的事项
+
+如果参考项目的实现存在明显问题，请不要照搬。例如原项目的 handleAddNode 没有检查 response.ok；请在我的实现中修复这类问题。
+
+）
+
+全局设置：可以设置网站地址（可以相应改变生成节点部署命令的时候使用的连接地址）、是否私有网站（设置后首页也要登录才能显示）、用户名&密码修改
+
+
+请帮我确认我上述的项目是否可行，并将我的需求整理成一个可用的Plan、并提供修改建议或功能增加建议。有什么问题可以尽可能多和我确认

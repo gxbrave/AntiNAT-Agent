@@ -1,0 +1,9 @@
+{
+  "data_path": "go_tcp_copy_splice_eligible",
+  "zero_copy_evidence": "eligible",
+  "pessimistic_fallback_bytes_per_connection": 65536,
+  "protocol": "tcp",
+  "direction": "bidirectional",
+  "transfer_bytes": 655360,
+  "result": "PASS"
+}

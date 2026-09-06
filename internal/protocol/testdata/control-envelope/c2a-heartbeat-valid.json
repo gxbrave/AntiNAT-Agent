@@ -1,0 +1,26 @@
+{
+  "schema": "antinat.contracts/control-envelope/v1",
+  "vector_id": "c2a-heartbeat-valid",
+  "expect": "valid",
+  "frame_hex": "414e415401000000dd0000000200000012416e74694e41542d436f6e74726f6c2d763100000010000102030405060708090a0b0c0d0e0f00000010101112131415161718191a1b1c1d1e1f00000010636f6e74726f6c6c65722d6b65792d31000000040000000100000008000000000000000700000009736573732d30303037000000010100000008000000000000002a000000100dbbccddeeff001122334455667788990000000968656172746265617400000004000000010000000800000000000000020000002044136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a7b7d8dcc0061e75483ef689617de04ea91ba6cffa272d8df3020c7fe74d3b4e97984788a192ef300b313f92b091ac993f435163a885d8e30425e49927690b7562b03",
+  "verifier": "agent",
+  "public_key_hex": "d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737",
+  "header": {
+    "protocol_domain": "AntiNAT-Control-v1",
+    "controller_instance_id": "000102030405060708090a0b0c0d0e0f",
+    "node_id": "101112131415161718191a1b1c1d1e1f",
+    "controller_key_id": "controller-key-1",
+    "agent_credential_version": 1,
+    "connection_epoch": 7,
+    "session_id": "sess-0007",
+    "direction": "c2a",
+    "sequence": 42,
+    "message_id": "0dbbccddeeff00112233445566778899",
+    "message_type": "heartbeat",
+    "schema_version": 1,
+    "payload_length": 2,
+    "payload_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "payload_hex": "7b7d",
+  "payload_json": "{}"
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "antinat.contracts/control-envelope/v1",
+  "vector_id": "signature-wrong-key",
+  "expect": "invalid",
+  "reject_stage": "signature",
+  "frame_hex": "414e415401000000db0000004700000012416e74694e41542d436f6e74726f6c2d763100000010000102030405060708090a0b0c0d0e0f00000010101112131415161718191a1b1c1d1e1f00000010636f6e74726f6c6c65722d6b65792d31000000040000000100000008000000000000000700000009736573732d30303037000000010100000008000000000000002a00000010aabbccddeeff0011223344556677889900000007646573697265640000000400000001000000080000000000000047000000207e9655ff207f421287607c19f0e3133a063d18603e6d0296aabd45178cde2b957b22666f72776172645f6964223a226677642d30303031222c2270726573656e6365223a2250524553454e54222c22746172676574223a2231302e302e302e353a38303830227deec9981caacfa8bc266efba5d5051bbcc69fad4ffee24feb3ab85d3ea0e55abf115bf7532ab4b9bd8d97fe14aae389b8f3efdc2b804871a7942a2852902baf0c",
+  "verifier": "agent",
+  "public_key_hex": "d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737",
+  "header": {
+    "protocol_domain": "AntiNAT-Control-v1",
+    "controller_instance_id": "",
+    "node_id": "",
+    "controller_key_id": "",
+    "agent_credential_version": 0,
+    "connection_epoch": 0,
+    "session_id": "",
+    "direction": "",
+    "sequence": 0,
+    "message_id": "",
+    "message_type": "",
+    "schema_version": 0,
+    "payload_length": 0,
+    "payload_sha256": ""
+  }
+}

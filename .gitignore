@@ -1,0 +1,37 @@
+# Go build output
+/bin/
+/dist/
+*.test
+*.out
+coverage*.txt
+
+# Local tooling and caches
+.gocache/
+.gopath/
+.tmp/
+
+# Evidence and runtime state (keep checked-in schemas/fixtures)
+*.pcap
+*.log
+state/
+run/
+var/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.token
+
+# IDE/OS files
+.idea/
+.vscode/
+.DS_Store
+
+# P17 browser test artifacts
+test/browser/node_modules/
+test/browser/.bin/
+test/browser/test-results/
+test/browser/playwright-report/

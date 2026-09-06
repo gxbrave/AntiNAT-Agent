@@ -1,0 +1,9 @@
+{
+  "schema": "antinat.contracts/probe-frame/v1",
+  "vector_id": "ack-valid",
+  "kind": "ack",
+  "expect": "valid",
+  "frame_hex": "41434b3147aecfbf889c38020498cde9a26fdbff2ecc69edf4ea4a75ca0487aad88aaea68b58f6a8e966a525ca6f8311c6bf2fcb604afe9ffdfa57740d07d95bdcbfdbfab89df6f36667ee06aa60883d0f1e3990e5851e62374ec4ce35ac10a0d685cd165cb15b24eaee26f98673b5bcfac5ee70860db22a91a31469558939122c879302",
+  "challenge_hash_hex": "8b58f6a8e966a525ca6f8311c6bf2fcb604afe9ffdfa57740d07d95bdcbfdbfa",
+  "node_public_key_hex": "a09aa5f47a6759802ff955f8dc2d2a14a5c99d23be97f864127ff9383455a4f0"
+}
