@@ -28,6 +28,6 @@ VOLUME ["/var/lib/antinat", "/var/log/antinat"]
 LABEL org.opencontainers.image.title="AntiNAT Agent" \
       org.opencontainers.image.source="https://github.com/gxbrave/AntiNAT-Agent" \
       org.opencontainers.image.description="AntiNAT forwarding agent" \
-      org.opencontainers.image.licenses="Apache-2.0"
+      org.opencontainers.image.licenses="GPL-3.0"
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/opt/antinat/bin/healthcheck-agent"]
 ENTRYPOINT ["/opt/antinat/bin/stage-enrollment"]

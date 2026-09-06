@@ -70,11 +70,12 @@ whether P01 has any current implementation evidence.
 
 ## Security and provenance boundary
 
-The repository is Apache-2.0. Natter is a principles-only reference from the
-original product note; its GPL-3.0 source and derived implementation are not
-copied. Enrollment tokens are secrets and must not be embedded in shell history,
-argv, environment, service definitions, or ordinary logs. Probe challenges are
-provider-hidden until the Agent receives the authenticated ingress frame.
+The repository is GPL-3.0. Natter is a principles-only reference from the
+original product requirements; its source and copied implementation are not
+included. Enrollment tokens are secrets and must not be embedded in shell
+history, argv, environment, service definitions, or ordinary logs. Probe
+challenges are provider-hidden until the Agent receives the authenticated
+ingress frame.
 
 ## Change control
 

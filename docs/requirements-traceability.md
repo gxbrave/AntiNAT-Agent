@@ -2,7 +2,7 @@
 
 Status date: 2026-08-09
 Owner: gxbrave
-Source of product intent: `antinat.txt`
+Source of product intent: the original AntiNAT product requirements
 The Agent implementation follows the shared protocol, state, and support
 contracts published in this repository.
 
@@ -28,7 +28,7 @@ are complete.
 | Install Controller, Agent, or both | Linux systemd is the primary beta path. Other platforms require their own install, upgrade, rollback, and purge evidence. | frozen | P18 installer evidence |
 | Display public IP from a public service | A service response is only an unverified diagnostic candidate. It never proves reachability or chooses a Controller endpoint automatically. | frozen | P01 ADR-0002; P10 probe tests |
 | One-click deployment command with token | Installation command and enrollment secret are separate. TTY input is hidden; non-interactive input requires a protected file descriptor or 0600 file. | frozen | P04 installer contract; P18 security evidence |
-| Natter as reference | Principles may inform design; no source, GPL-3.0 code, or copied implementation may enter this Apache-2.0 repository. | frozen | P01 ADR-0001; license review |
+| Natter as reference | Principles may inform design; Natter source or copied implementation may not enter this GPL-3.0 repository. | frozen | P01 ADR-0001; license review |
 | High concurrency and lightweight operation | A performance claim is release evidence, not a design assertion. No 2 Gbps, `<1 ms`, or zero-copy SLO is advertised in v1.0-beta. | frozen | P03 spike; P19 exact-artifact benchmark |
 | x64 and arm support | Linux amd64 is the primary target. Linux arm64 is evidence-gated; Windows amd64 and Docker have separate status gates. | frozen | `docs/support-matrix.md`; P18/P19 |
 
