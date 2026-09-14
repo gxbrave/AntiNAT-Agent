@@ -22,35 +22,15 @@ AntiNAT Agent 是 AntiNAT 的独立数据面程序。它运行在目标网络里
 - Go 1.26.6，或与 CI 兼容的 Go 版本
 - 自行编译需要 Go 和常用 Unix 工具；服务安装需要 root 权限
 
-### 方式一：一键安装脚本
+### 方式一：使用主控生成的安装命令
 
-安装器会从对应 Release 下载 manifest 和 Agent 制品，先验证固定信任根、签名及 SHA-256，再安装服务。注册 token 默认从隐藏的 TTY 输入，也可以放在权限为 `0600` 的文件或文件描述符中；不要把 token 直接写在命令行参数里。
+先在主控中添加 Agent，再复制主控生成的安装命令到目标 Linux 主机执行。命令调用本仓库根目录的 [`install.sh`](install.sh)，入口地址为 `https://raw.githubusercontent.com/gxbrave/AntiNAT-Agent/main/install.sh`。
 
-当前仓库还没有已发布的 GitHub Release，所以第一次使用请先看下面的自行编译方式。等对应版本发布后，在已经克隆本仓库的目录执行：
+入口没有菜单，也不支持脱离主控的无参数安装。主控必须提供节点 ID（`ANTINAT_NODE_ID`）、公钥 pin（`ANTINAT_CONTROLLER_PIN`）和地址（`--controller-endpoint`）。一次性注册 token 默认在终端隐藏输入，自动化使用 `--token-file`（0600 文件）或 `--token-fd`，不要将 token 明文放入命令行。
 
-```bash
-sudo env ANTINAT_RELEASE_BASE_URL="https://github.com/gxbrave/AntiNAT-Agent/releases/download/<版本号>" \
-  bash scripts/install.sh install \
-  --controller-endpoint https://你的主控地址
-```
+选择主控的一键安装菜单“主控 + Agent”时，主控会自动创建本地 Agent，并使用 `http://127.0.0.1:用户设定端口` 安装注册。Docker 主控由用户通过镜像部署，Agent 仍需单独使用主控生成的命令安装。
 
-国内网络可以使用 `ghfast.top` 镜像前缀：
-
-```bash
-sudo env ANTINAT_RELEASE_BASE_URL="https://ghfast.top/https://github.com/gxbrave/AntiNAT-Agent/releases/download/<版本号>" \
-  bash scripts/install.sh install \
-  --controller-endpoint https://你的主控地址
-```
-
-这里要改的是 `ANTINAT_RELEASE_BASE_URL`，因为 `ghfast.top` 是 GitHub URL 前缀镜像；`--github-proxy` 只适用于真正的 HTTP(S) 代理服务器。安装器目前主要支持 Linux amd64，参数和安全约束见 [`docs/installer-contract.md`](docs/installer-contract.md)。
-
-安装完成后，按提示输入主控为这个节点签发的一次性 token。安装器支持：
-
-```bash
-sudo bash scripts/install.sh upgrade
-sudo bash scripts/install.sh uninstall
-sudo bash scripts/install.sh purge
-```
+入口默认下载本仓库 `v1.0.0-beta.2` Release 的安装器、信任根和签名制品。目前该 Release 尚未发布，在线安装需等待发布。可通过 `ANTINAT_AGENT_RELEASE_VERSION` 选择版本，或通过 `ANTINAT_AGENT_RELEASE_BASE_URL` 指定 HTTPS Release 镜像前缀；不会继承主控的 Release 下载地址。底层参数与安全约束见 [`docs/installer-contract.md`](docs/installer-contract.md)。
 
 ### 方式二：自行编译
 
@@ -128,6 +108,8 @@ Agent 是数据面的唯一归属方：主控只下发期望状态和探测任�
 ## 测试
 
 ```bash
+python3 -m unittest discover -s tests
+bash -n install.sh
 GOWORK=off go test ./...
 GOWORK=off go test -race ./...
 GOWORK=off go vet ./...

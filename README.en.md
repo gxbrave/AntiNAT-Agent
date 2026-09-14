@@ -22,35 +22,15 @@ The Controller project is [gxbrave/AntiNAT](https://github.com/gxbrave/AntiNAT).
 - Go 1.26.6, or a CI-compatible Go version.
 - Source builds need Go and common Unix tools; service installation needs root privileges.
 
-### Option 1: Installer script
+### Option 1: Use the Controller-generated install command
 
-The installer downloads the Agent manifest and artifacts from a release, verifies the pinned trust root, signature, and SHA-256 digests, and then installs the service. Enrollment tokens are read from a hidden TTY or a `0600` file/file descriptor. Never put a token directly in command-line arguments.
+Add an Agent in the Controller, then copy its generated install command to the target Linux host. The command calls this repository's root [`install.sh`](install.sh) at `https://raw.githubusercontent.com/gxbrave/AntiNAT-Agent/main/install.sh`.
 
-There is no published GitHub Release for this repository yet. Once a matching release exists, run this from a clone of the repository:
+The entry point has no menu and rejects installation without Controller parameters: node ID (`ANTINAT_NODE_ID`), public-key pin (`ANTINAT_CONTROLLER_PIN`), and endpoint (`--controller-endpoint`). Enter the one-time enrollment token through the hidden terminal prompt, or use `--token-file` (a 0600 file) / `--token-fd` for automation. Never pass the literal token in command-line arguments.
 
-```bash
-sudo env ANTINAT_RELEASE_BASE_URL="https://github.com/gxbrave/AntiNAT-Agent/releases/download/<version>" \
-  bash scripts/install.sh install \
-  --controller-endpoint https://your-controller.example
-```
+The Controller installer's “Controller + Agent” option creates a local Agent and enrolls it using `http://127.0.0.1:YOUR_PORT`. Deploy Docker Controllers directly from the image, then install Agents separately using Controller-generated commands.
 
-For networks that need a GitHub mirror, use `ghfast.top` as the URL prefix:
-
-```bash
-sudo env ANTINAT_RELEASE_BASE_URL="https://ghfast.top/https://github.com/gxbrave/AntiNAT-Agent/releases/download/<version>" \
-  bash scripts/install.sh install \
-  --controller-endpoint https://your-controller.example
-```
-
-Set `ANTINAT_RELEASE_BASE_URL` for this URL-prefix mirror. `--github-proxy` is for a real HTTP(S) proxy server and is a different option. The installer currently targets Linux amd64; see [`docs/installer-contract.md`](docs/installer-contract.md) for the CLI and security rules.
-
-After the Controller issues a one-time token for the node, enter it when prompted. The lifecycle commands are:
-
-```bash
-sudo bash scripts/install.sh upgrade
-sudo bash scripts/install.sh uninstall
-sudo bash scripts/install.sh purge
-```
+The bootstrap defaults to this repository's `v1.0.0-beta.2` Release installer, trust root, and signed artifacts. That release is not published yet; online installation requires its publication. Set `ANTINAT_AGENT_RELEASE_VERSION` to select a version or `ANTINAT_AGENT_RELEASE_BASE_URL` to use an HTTPS release mirror. The Controller's release URL is never inherited. See [`docs/installer-contract.md`](docs/installer-contract.md) for the underlying CLI and security rules.
 
 ### Option 2: Build from source
 
@@ -122,6 +102,8 @@ The installer treats the release manifest as a trust boundary: it verifies the s
 ## Tests
 
 ```bash
+python3 -m unittest discover -s tests
+bash -n install.sh
 GOWORK=off go test ./...
 GOWORK=off go test -race ./...
 GOWORK=off go vet ./...
