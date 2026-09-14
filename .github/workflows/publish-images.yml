@@ -1,0 +1,27 @@
+name: Publish separate container images
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Existing release tag
+        required: true
+        default: v1.0.0-beta.2
+permissions:
+  contents: read
+  packages: write
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ inputs.version }}
+      - name: Build and publish Agent image
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker build --build-arg VERSION="$VERSION" --build-arg COMMIT="$(git rev-parse HEAD)" --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" -t "ghcr.io/gxbrave/antinat-agent:$VERSION" .
+          docker push "ghcr.io/gxbrave/antinat-agent:$VERSION"
