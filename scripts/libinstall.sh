@@ -281,10 +281,9 @@ installer_validate_endpoint() {
     [[ "$endpoint" =~ ^https?://[^[:space:]/?#]+(:[0-9]+)?([/][^[:space:]?#]*)?$ ]] || return 1
     [[ "$endpoint" != *"@"* && "$endpoint" != *"?"* && "$endpoint" != *"#"* ]] || return 1
     # Enrollment carries the one-time token in the request body. Plain HTTP is
-    # allowed only for an explicitly local test endpoint; remote controllers
-    # must use TLS before any token is read.
+    # allowed for the Controller-generated local enrollment endpoint only;
+    # remote controllers must use TLS before any token is read.
     if [[ "$endpoint" == http://* ]]; then
-        [[ "${ANTINAT_TEST_MODE:-0}" == 1 ]] || return 1
         [[ "$endpoint" =~ ^http://(127\.0\.0\.1|localhost|\[::1\])(:[0-9]+)?([/][^[:space:]?#]*)?$ ]] || return 1
     fi
 }
