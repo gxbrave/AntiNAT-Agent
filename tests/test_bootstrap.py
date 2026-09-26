@@ -21,7 +21,7 @@ case "$url" in
    return subprocess.run(['bash',str(ROOT/'install.sh'),*args],env=env,text=True,capture_output=True)
  def test_agent_release_override_is_separate(self):
   args=['--controller-endpoint','http://127.0.0.1:3456']
-  r=self.run_script(args,overrides={'ANTINAT_RELEASE_BASE_URL':'https://controller.invalid/release','ANTINAT_AGENT_RELEASE_BASE_URL':'https://mirror.example/https://github.com/gxbrave/AntiNAT-Agent/releases/download/v1.0.0-beta.2'})
+  r=self.run_script(args,overrides={'ANTINAT_RELEASE_BASE_URL':'https://controller.invalid/release','ANTINAT_AGENT_RELEASE_BASE_URL':'https://mirror.example/https://github.com/gxbrave/AntiNAT-Agent/releases/download/v1.0.0-beta.3'})
   self.assertEqual(r.returncode,0,r.stderr)
   self.assertIn('BASE=https://mirror.example/',r.stdout)
   self.assertNotIn('controller.invalid',r.stdout)
@@ -37,7 +37,7 @@ case "$url" in
   r=self.run_script(['install','--platform','linux','--controller-endpoint','http://127.0.0.1:3456','--token-file','/secure/token'])
   self.assertEqual(r.returncode,0,r.stderr)
   self.assertIn('ROLE=agent',r.stdout)
-  self.assertIn('AntiNAT-Agent/releases/download/v1.0.0-beta.2',r.stdout)
+  self.assertIn('AntiNAT-Agent/releases/download/v1.0.0-beta.3',r.stdout)
   self.assertIn('ARG=/secure/token',r.stdout)
  def test_rejects_role_and_literal_token(self):
   for args in [['--role','controller'],['--token','secret']]:

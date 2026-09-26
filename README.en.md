@@ -30,7 +30,7 @@ The entry point has no menu and rejects installation without Controller paramete
 
 The Controller installer's “Controller + Agent” option creates a local Agent and enrolls it using `http://127.0.0.1:YOUR_PORT`. Deploy Docker Controllers directly from the image, then install Agents separately using Controller-generated commands.
 
-The bootstrap defaults to this repository's `v1.0.0-beta.2` Release installer, trust root, and signed artifacts. That release is not published yet; online installation requires its publication. Set `ANTINAT_AGENT_RELEASE_VERSION` to select a version or `ANTINAT_AGENT_RELEASE_BASE_URL` to use an HTTPS release mirror. The Controller's release URL is never inherited. See [`docs/installer-contract.md`](docs/installer-contract.md) for the underlying CLI and security rules.
+The bootstrap defaults to this repository's published `v1.0.0-beta.3` Release installer, trust root, and signed artifacts. Set `ANTINAT_AGENT_RELEASE_VERSION` to select a version or `ANTINAT_AGENT_RELEASE_BASE_URL` to use an HTTPS release mirror. The Controller's release URL is never inherited. See [`docs/installer-contract.md`](docs/installer-contract.md) for the underlying CLI and security rules.
 
 ### Option 2: Build from source
 

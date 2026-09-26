@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.0-beta.3
+
+- Published signed Linux amd64 and Windows amd64 Agent artifacts with the
+  manifest, installer scripts, and pinned release trust root.
+- Hardened bootstrap cleanup and forwarding runtime state reporting.
+- Kept public-WAN, native Windows, arm64, OpenRC, and long-running soak claims
+  outside the verified scope.
+
 ## Unreleased beta candidate
 
 - Published the standalone Agent source and build pipeline extracted from the

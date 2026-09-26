@@ -30,7 +30,7 @@ AntiNAT Agent 是 AntiNAT 的独立数据面程序。它运行在目标网络里
 
 选择主控的一键安装菜单“主控 + Agent”时，主控会自动创建本地 Agent，并使用 `http://127.0.0.1:用户设定端口` 安装注册。Docker 主控由用户通过镜像部署，Agent 仍需单独使用主控生成的命令安装。
 
-入口默认下载本仓库 `v1.0.0-beta.2` Release 的安装器、信任根和签名制品。目前该 Release 尚未发布，在线安装需等待发布。可通过 `ANTINAT_AGENT_RELEASE_VERSION` 选择版本，或通过 `ANTINAT_AGENT_RELEASE_BASE_URL` 指定 HTTPS Release 镜像前缀；不会继承主控的 Release 下载地址。底层参数与安全约束见 [`docs/installer-contract.md`](docs/installer-contract.md)。
+入口默认下载本仓库已发布的 `v1.0.0-beta.3` Release 安装器、信任根和签名制品。可通过 `ANTINAT_AGENT_RELEASE_VERSION` 选择版本，或通过 `ANTINAT_AGENT_RELEASE_BASE_URL` 指定 HTTPS Release 镜像前缀；不会继承主控的 Release 下载地址。底层参数与安全约束见 [`docs/installer-contract.md`](docs/installer-contract.md)。
 
 ### 方式二：自行编译
 

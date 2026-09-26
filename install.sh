@@ -21,7 +21,7 @@ done
 [[ "${ANTINAT_CONTROLLER_PIN:-}" =~ ^[0-9a-f]{64}$ ]] || fail 'Controller-generated ANTINAT_CONTROLLER_PIN must be 64 lowercase hex characters'
 # Never inherit the Controller bootstrap role when installing the local Agent.
 export ANTINAT_ROLE=agent
-release_version="${ANTINAT_AGENT_RELEASE_VERSION:-v1.0.0-beta.2}"
+release_version="${ANTINAT_AGENT_RELEASE_VERSION:-v1.0.0-beta.3}"
 [[ "$release_version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]] || fail 'invalid Agent release version'
 release_base_url="${ANTINAT_AGENT_RELEASE_BASE_URL:-https://github.com/gxbrave/AntiNAT-Agent/releases/download/$release_version}"
 [[ "$release_base_url" != *"@"* && "$release_base_url" =~ ^https://[^[:space:]/?#]+(/[^[:space:]?#]*)?$ ]] || fail 'invalid Agent release URL'

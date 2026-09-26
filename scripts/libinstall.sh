@@ -325,7 +325,7 @@ installer_fetch_release() {
         INSTALLER_SIGNATURE_FILE="${ANTINAT_SIGNATURE_FILE:-$INSTALLER_ARTIFACT_DIR/manifest.sig}"
         return 0
     fi
-    local base_url="${ANTINAT_RELEASE_BASE_URL:-https://github.com/gxbrave/AntiNAT-Agent/releases/download/v1.0.0-beta}"
+    local base_url="${ANTINAT_RELEASE_BASE_URL:-https://github.com/gxbrave/AntiNAT-Agent/releases/download/v1.0.0-beta.3}"
     [[ "$base_url" != *"@"* && "$base_url" =~ ^https://[^[:space:]/?#]+(/[^[:space:]?#]*)?$ ]] || return "$INSTALLER_EXIT_ARTIFACT"
     local scratch
     scratch=$(mktemp -d "${TMPDIR:-/tmp}/antinat-release.XXXXXX") || return "$INSTALLER_EXIT_ARTIFACT"

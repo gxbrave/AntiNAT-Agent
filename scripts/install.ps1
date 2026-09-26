@@ -903,7 +903,7 @@ function Get-ReleaseDirectory {
         $script:SignatureFile = if ($env:ANTINAT_SIGNATURE_FILE) { $env:ANTINAT_SIGNATURE_FILE } else { Join-Path $ArtifactDir 'manifest.sig' }
         return
     }
-    $base = if ($env:ANTINAT_AGENT_RELEASE_BASE_URL) { $env:ANTINAT_AGENT_RELEASE_BASE_URL } else { 'https://github.com/gxbrave/AntiNAT-Agent/releases/download/v1.0.0-beta.2' }
+    $base = if ($env:ANTINAT_AGENT_RELEASE_BASE_URL) { $env:ANTINAT_AGENT_RELEASE_BASE_URL } else { 'https://github.com/gxbrave/AntiNAT-Agent/releases/download/v1.0.0-beta.3' }
     if ($base -match '@' -or $base -notmatch '^https://[^\s/?#]+(?:/[^\s?#]*)?$') { Fail $ExitArtifact 'release base URL must use HTTPS without URL userinfo' }
     $script:ArtifactDir = Join-Path ([IO.Path]::GetTempPath()) ([IO.Path]::GetRandomFileName())
     New-Item -ItemType Directory -Path $ArtifactDir | Out-Null
