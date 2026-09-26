@@ -74,7 +74,7 @@ The same values can be supplied through `ANTINAT_ENDPOINT`, `ANTINAT_NODE`, `ANT
 
 ## Support Limits
 
-The current candidate is `SUPPORTED_WITH_LIMITS`:
+The current release is `v1.0.0-beta.3` and is `SUPPORTED_WITH_LIMITS`:
 
 - Linux amd64 builds, package tests, race tests, and local protocol tests are the most complete.
 - Windows amd64 has cross-build and installer compilation checks, not a full Windows runtime claim.

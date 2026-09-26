@@ -80,7 +80,7 @@ chmod 600 ./var/enrollment.token
 
 ## 支持范围
 
-当前版本是 `SUPPORTED_WITH_LIMITS`：
+当前发布版本为 `v1.0.0-beta.3`，状态是 `SUPPORTED_WITH_LIMITS`：
 
 - Linux amd64 的构建、单元测试、竞态测试和本地协议测试较完整。
 - Windows amd64 主要有交叉编译和安装器编译检查，不宣称完整 Windows 运行时支持。

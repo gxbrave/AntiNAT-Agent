@@ -8,7 +8,7 @@ intentionally explicit so a bootstrap build cannot be mistaken for support.
 
 | Capability / platform | v1 status | Required evidence gate | Current evidence |
 |---|---|---|---|
-| Controller/Agent build on Linux amd64 | `beta` | Go build, package tests, startup/readiness and release artifact checks | P18 integrated binaries; P19 exact-build, manifest, unit, race, vet, E2E, and installer candidate gates pass locally. No published release. |
+| Controller/Agent build on Linux amd64 | `beta` | Go build, package tests, startup/readiness and release artifact checks | Signed Agent `v1.0.0-beta.3` artifact passed exact-build, manifest, unit, race, vet, E2E, installer candidate gates, and native Linux startup/control checks. No independent WAN claim. |
 | Linux amd64 direct/manual TCP forwarding | `beta` | P10 Linux direct-v4 walking-skeleton E2E with independent probe and target response | Local loopback walking-skeleton evidence passes; independent public-WAN reachability is unproven. |
 | Linux amd64 UDP forwarding | `beta` | P13 bounded mux/session/ICMP/MTU E2E and crash tests | P13 integrated package and local evidence; no independent WAN promotion. |
 | Linux arm64 runtime | `experimental` | P18 real arm64 host install/restart/upgrade/purge evidence | Agent/CLI cross-build evidence only; no native arm64 runtime. |
