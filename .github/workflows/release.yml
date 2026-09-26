@@ -56,7 +56,11 @@ jobs:
         env:
           ANTINAT_RELEASE_SIGNING_KEY: ${{ secrets.ANTINAT_RELEASE_SIGNING_KEY }}
         run: |
-          test -n "$ANTINAT_RELEASE_SIGNING_KEY"
+          if [[ -z "$ANTINAT_RELEASE_SIGNING_KEY" ]]; then
+            echo 'ANTINAT_RELEASE_SIGNING_KEY is unavailable in the antinat-release environment' >&2
+            exit 1
+          fi
+          printf 'release signing key supplied (%s characters)\n' "${#ANTINAT_RELEASE_SIGNING_KEY}"
           key_file="$RUNNER_TEMP/antinat-agent-release.key"
           umask 077
           printf '%s' "$ANTINAT_RELEASE_SIGNING_KEY" > "$key_file"
