@@ -6,6 +6,7 @@ class BootstrapTests(unittest.TestCase):
    p=pathlib.Path(tmp)
    (p/'curl').write_text('''#!/bin/bash
 set -eu
+[[ " $* " == *" --max-time "* && " $* " == *" --retry "* ]] || exit 88
 url=""; out=""
 while (($#)); do case "$1" in -o) out="$2"; shift 2;; https://*) url="$1"; shift;; *) shift;; esac; done
 case "$url" in
@@ -41,4 +42,16 @@ case "$url" in
  def test_rejects_role_and_literal_token(self):
   for args in [['--role','controller'],['--token','secret']]:
    r=self.run_script(['--controller-endpoint','http://127.0.0.1:3456',*args]); self.assertEqual(r.returncode,2,r.stderr)
+ def test_purge_removes_agent_runtime_files(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   state=pathlib.Path(tmp)/'var/lib/antinat'
+   state.mkdir(parents=True)
+   (state/'detection.profile').write_text('cached')
+   (state/'.enrollment-token').write_text('stale')
+   env=dict(os.environ,ANTINAT_TEST_ROOT=tmp,ANTINAT_TEST_MODE='1',ANTINAT_ROLE='agent')
+   r=subprocess.run(['bash','-c','source "$1"; set +e; installer_run purge; exit "$?"',
+                     'test',str(ROOT/'scripts/libinstall.sh')],env=env,capture_output=True,text=True)
+   self.assertEqual(r.returncode,7,r.stderr)
+   self.assertFalse((state/'detection.profile').exists())
+   self.assertFalse((state/'.enrollment-token').exists())
 if __name__=='__main__': unittest.main()

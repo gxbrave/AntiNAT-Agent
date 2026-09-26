@@ -587,6 +587,7 @@ func (a *App) Start(ctx context.Context) error {
 	a.uninstallServer = uninstallServer
 	a.closeMu.Unlock()
 	if a.currentMarker() == localstate.MarkerActive {
+		a.updateActivationControlState(runCtx, "ONLINE")
 		a.replayActivationStatuses(runCtx)
 		a.lifecycleWG.Add(1)
 		go func() {
@@ -723,6 +724,43 @@ func (a *App) replayActivationStatuses(ctx context.Context) {
 	}
 }
 
+func (a *App) updateActivationControlState(ctx context.Context, state string) {
+	a.probeAdmissionMu.Lock()
+	defer a.probeAdmissionMu.Unlock()
+	if a.dp == nil {
+		return
+	}
+	a.dp.mu.Lock()
+	activations := make([]*reconcile.Activation, 0, len(a.activations))
+	for _, act := range a.activations {
+		activations = append(activations, act)
+	}
+	a.dp.mu.Unlock()
+	for _, act := range activations {
+		if err := act.Update("control_state", state, act.Generation()); err != nil {
+			continue
+		}
+		forwardID, activation, generation, states := act.IdentitySnapshot()
+		if a.store != nil {
+			if err := a.store.SaveActivationSnapshot(localstate.ActivationSnapshot{
+				ForwardID: forwardID, Activation: activation,
+				Generation: generation, States: states,
+			}); err != nil {
+				continue
+			}
+		}
+		payload, err := json.Marshal(struct {
+			ForwardID  string                    `json:"forward_id"`
+			Activation string                    `json:"activation"`
+			Generation uint64                    `json:"generation"`
+			Snapshot   protocol.ActivationStates `json:"snapshot"`
+		}{forwardID, activation, generation, states})
+		if err == nil {
+			a.sendActivationStatus(ctx, payload)
+		}
+	}
+}
+
 // sendActivationStatus uses a bounded write context. If the transport is
 // unavailable, the persisted snapshot is replayed on the next reconnect.
 func (a *App) sendActivationStatus(ctx context.Context, payload []byte) {
@@ -754,6 +792,7 @@ func (a *App) reconnectControl(ctx context.Context) {
 		// A reconnect is also an evidence boundary: the old independent proof
 		// cannot be treated as current while the control session was absent.
 		a.markActivationsUnverified(ctx)
+		a.updateActivationControlState(ctx, "OFFLINE")
 		select {
 		case <-ctx.Done():
 			return
@@ -774,6 +813,7 @@ func (a *App) reconnectControl(ctx context.Context) {
 			}
 			continue
 		}
+		a.updateActivationControlState(ctx, "ONLINE")
 		a.replayActivationStatuses(ctx)
 		if err := a.probeMgr.RetryPendingReceipts(ctx); err != nil {
 			a.ready.Store(false)
@@ -1630,6 +1670,13 @@ func (a *App) onForwardApplied(spec protocol.ForwardSpec, applied protocol.Appli
 		if saved, ok, err := a.store.LoadActivationSnapshot(applied.ForwardID); err == nil && ok && saved.Activation == activationID && saved.Generation == applied.SpecRevision {
 			_ = act.Set(saved.States)
 		}
+	}
+	if connected, ok := a.client.(connectedControlClient); ok && connected.Connected() {
+		_ = act.Update("control_state", "ONLINE", act.Generation())
+	}
+	if a.store != nil {
+		aid := protocol.ActivationID(applied.ForwardID, applied.SpecRevision)
+		activationID := hex.EncodeToString(aid[:])
 		saveErr = a.store.SaveActivationSnapshot(localstate.ActivationSnapshot{
 			ForwardID: applied.ForwardID, Activation: activationID,
 			Generation: applied.SpecRevision, States: act.Snapshot(),

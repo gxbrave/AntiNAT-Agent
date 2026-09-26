@@ -30,8 +30,10 @@ tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/antinat-agent-installer.XXXXXX")
 trap 'rm -rf -- "$tmp_dir"' EXIT
 mkdir -p -- "$tmp_dir/scripts" "$tmp_dir/deploy/trust"
 curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+    --connect-timeout 15 --max-time 60 --retry 2 --retry-all-errors --retry-delay 1 \
     "$ANTINAT_RELEASE_BASE_URL/libinstall.sh" -o "$tmp_dir/scripts/libinstall.sh"
 curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+    --connect-timeout 15 --max-time 60 --retry 2 --retry-all-errors --retry-delay 1 \
     "$ANTINAT_RELEASE_BASE_URL/release-ed25519.pub" -o "$tmp_dir/deploy/trust/release-ed25519.pub"
 # shellcheck source=/dev/null
 source "$tmp_dir/scripts/libinstall.sh"

@@ -342,7 +342,8 @@ installer_fetch_release() {
     while IFS= read -r artifact; do
         [[ -n "$artifact" ]] || continue
         [[ "$artifact" != */* ]] && artifact="${artifact##*/}"
-        curl "${curl_options[@]}" --max-time 120 "$base_url/$artifact" -o "$scratch/${artifact##*/}" || return "$INSTALLER_EXIT_ARTIFACT"
+        curl "${curl_options[@]}" --connect-timeout 20 --max-time 600 --retry 2 \
+            "$base_url/$artifact" -o "$scratch/${artifact##*/}" || return "$INSTALLER_EXIT_ARTIFACT"
     done < <(jq -r '.artifacts | keys[]' "$INSTALLER_MANIFEST_FILE")
     return 0
 }
@@ -988,6 +989,8 @@ installer_ownership_resource_role() {
         "$INSTALLER_DATA_DIR:node.key"|\
         "$INSTALLER_DATA_DIR:.key.lock"|\
         "$INSTALLER_DATA_DIR:.lifecycle.lock"|\
+        "$INSTALLER_DATA_DIR:detection.profile"|\
+        "$INSTALLER_DATA_DIR:.enrollment-token"|\
         "$INSTALLER_DATA_DIR:terminal.marker"|\
         "$INSTALLER_DATA_DIR:agent.marker"|\
         "$(dirname -- "$INSTALLER_CONFIG"):agent.conf"|\
@@ -1097,6 +1100,8 @@ installer_make_ownership_manifest() {
               {root:$data,path:"node.key"},
               {root:$data,path:".key.lock"},
               {root:$data,path:".lifecycle.lock"},
+              {root:$data,path:"detection.profile"},
+              {root:$data,path:".enrollment-token"},
               {root:$data,path:"terminal.marker"},
               {root:$data,path:"agent.marker"},
               {root:$config,path:"agent.conf"},
@@ -1745,6 +1750,8 @@ installer_fallback_purge() {
         installer_safe_remove "$INSTALLER_DATA_DIR" node.key || return 1
         installer_safe_remove "$INSTALLER_DATA_DIR" .key.lock || return 1
         installer_safe_remove "$INSTALLER_DATA_DIR" .lifecycle.lock || return 1
+        installer_safe_remove "$INSTALLER_DATA_DIR" detection.profile || return 1
+        installer_safe_remove "$INSTALLER_DATA_DIR" .enrollment-token || return 1
         installer_safe_remove "$(dirname -- "$INSTALLER_CONFIG")" agent.conf || return 1
         installer_safe_remove "$INSTALLER_SERVICE_DIR" antinat-agent.service || return 1
         installer_safe_remove "$INSTALLER_OPENRC_DIR" antinat-agent || return 1
@@ -1815,6 +1822,11 @@ installer_purge() {
         used_manifest=0
         printf 'antinat installer: ownership manifest unavailable or invalid; using compile-time allowlist only\n' >&2
         installer_fallback_purge || return "$INSTALLER_EXIT_GENERIC"
+    fi
+    if installer_role_has_agent; then
+        # Existing signed ownership manifests predate these Agent runtime files.
+        installer_safe_remove "$INSTALLER_DATA_DIR" detection.profile || return "$INSTALLER_EXIT_GENERIC"
+        installer_safe_remove "$INSTALLER_DATA_DIR" .enrollment-token || return "$INSTALLER_EXIT_GENERIC"
     fi
     # Empty parent directories are safe to remove only when they contain no
     # user files. Never use recursive deletion for these shared parents.
