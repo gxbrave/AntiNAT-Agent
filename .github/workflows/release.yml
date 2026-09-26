@@ -61,8 +61,20 @@ jobs:
           umask 077
           printf '%s' "$ANTINAT_RELEASE_SIGNING_KEY" > "$key_file"
           public_key_file="$RUNNER_TEMP/antinat-agent-release.pub"
-          openssl pkey -in "$key_file" -pubout -out "$public_key_file"
-          cmp -- "$public_key_file" deploy/trust/release-ed25519.pub
+          parse_error="$RUNNER_TEMP/antinat-agent-release-key.error"
+          if ! openssl pkey -in "$key_file" -pubout -out "$public_key_file" 2>"$parse_error"; then
+            printf 'release signing key cannot be parsed (%s bytes)\n' "$(wc -c <"$key_file")" >&2
+            cat "$parse_error" >&2
+            exit 1
+          fi
+          expected_public_key="$RUNNER_TEMP/antinat-agent-expected.pub.der"
+          actual_public_key="$RUNNER_TEMP/antinat-agent-actual.pub.der"
+          openssl pkey -pubin -in deploy/trust/release-ed25519.pub -outform DER -out "$expected_public_key"
+          openssl pkey -pubin -in "$public_key_file" -outform DER -out "$actual_public_key"
+          cmp -- "$expected_public_key" "$actual_public_key" || {
+            echo 'release signing key does not match deploy/trust/release-ed25519.pub' >&2
+            exit 1
+          }
           openssl pkeyutl -sign -rawin -inkey "$key_file" -in release/manifest.json -out release/manifest.sig
           chmod 600 release/manifest.sig
       - name: Publish immutable release
